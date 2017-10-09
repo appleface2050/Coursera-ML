@@ -121,7 +121,9 @@ def batch_gradient_decent(theta, X, y, epoch, alpha=0.01):
     for _ in range(epoch):
         _theta = _theta - alpha * gradient(_theta, X, y)
         cost_data.append(cost(_theta, X, y))
-
+        # if cost(_theta, X, y)<=4.44816110129:
+        #     print ("循环次数",_)
+        #     break
     return _theta, cost_data
 
 

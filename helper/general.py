@@ -21,3 +21,5 @@ def normalize_feature(df):
     """Applies function along input axis(default 0) of DataFrame."""
     return df.apply(lambda column: (column - column.mean()) / column.std())
 
+def normalize_feature(df):
+    return (df - df.mean()) / df.std()
