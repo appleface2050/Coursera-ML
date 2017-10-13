@@ -219,6 +219,20 @@ def cost(theta, X, y):
     return pair_computation.sum() / m
 
 
+def cost_v2(theta, X, y):
+    """calculate cost
+    y: (m, k) ndarray
+    """
+    m = X.shape[0]  # get the data size m
+
+    _, _, _, _, h = feed_forward_v2(theta, X)
+
+    # np.multiply is pairwise operation
+    pair_computation = -np.multiply(y, np.log(h)) - np.multiply((1 - y), np.log(1 - h))
+
+    return pair_computation.sum() / m
+
+
 def regularized_cost(theta, X, y, l=1):
     """the first column of t1 and t2 is intercept theta, ignore them when you do regularization"""
     t1, t2 = deserialize(theta)  # t1: (25,401) t2: (10,26)
@@ -228,6 +242,19 @@ def regularized_cost(theta, X, y, l=1):
     reg_t2 = (l / (2 * m)) * np.power(t2[:, 1:], 2).sum()
 
     return cost(theta, X, y) + reg_t1 + reg_t2
+
+
+def regularized_cost_v2(theta, X, y, l=1):
+    """the first column of t1 and t2 is intercept theta, ignore them when you do regularization"""
+    # t1, t2 = deserialize(theta)  # t1: (25,401) t2: (10,26)
+    t1 = theta.get("theta1")   # t1: (25,401) t2: (10,26)
+    t2 = theta.get("theta2")
+    m = X.shape[0]
+
+    reg_t1 = (l / (2 * m)) * np.power(t1[:, 1:], 2).sum()  # this is how you ignore first col
+    reg_t2 = (l / (2 * m)) * np.power(t2[:, 1:], 2).sum()
+
+    return cost_v2(theta, X, y) + reg_t1 + reg_t2
 
 
 def gradient(theta, X, y):
