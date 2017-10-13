@@ -185,6 +185,25 @@ def feed_forward(theta, X):
 
     return a1, z2, a2, z3, h  # you need all those for backprop
 
+def feed_forward_v2(theta, X):
+    """apply to architecture 400+1 * 25+1 *10
+    X: 5000 * 401
+    """
+
+    t1 = theta.get("theta1")   # t1: (25,401) t2: (10,26)
+    t2 = theta.get("theta2")
+    m = X.shape[0]
+    a1 = X  # 5000 * 401
+
+    z2 = a1 @ t1.T  # 5000 * 25
+    a2 = np.insert(lr.sigmoid(z2), 0, np.ones(m), axis=1)  # 5000*26
+
+    z3 = a2 @ t2.T  # 5000 * 10
+    h = lr.sigmoid(z3)  # 5000*10, this is h_theta(X)
+
+    return a1, z2, a2, z3, h  # you need all those for backprop
+
+
 
 def cost(theta, X, y):
     """calculate cost
