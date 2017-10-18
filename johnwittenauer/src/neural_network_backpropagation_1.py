@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import sys
-
+import datetime
 sys.path.append('..')
 
 from helper import nn
@@ -294,10 +294,21 @@ if __name__ == '__main__':
     y = expand_y(y_raw)
     t1, t2 = nn.load_weight('D:\git\Coursera-ML\johnwittenauer\data\ex4weights.mat')
     print(t1.shape, t2.shape)
-    # theta = nn.serialize(t1, t2)  # flatten params
+    theta2 = nn.serialize(t1, t2)  # flatten params
     # print(theta.shape)
     theta = {"theta1": t1, "theta2": t2}
     # _, _, _, _, h = nn.feed_forward(theta, X)
     _, _, _, _, h = nn.feed_forward_v2(theta, X)
     print("cost:", nn.cost_v2(theta, X, y))
     print("regularized cost:", nn.regularized_cost_v2(theta, X, y))
+
+    print(nn.sigmoid_gradient(0))
+
+
+    # nn.gradient_checking(theta2, X, y, epsilon=0.0001)
+    now = datetime.datetime.now()
+    res = nn.nn_training(X, y)
+    print(res)
+    print(datetime.datetime.now() - now)
+
+
