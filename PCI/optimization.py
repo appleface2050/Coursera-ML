@@ -36,8 +36,11 @@ def schedulecost(sol):
     for d in range(len(sol) / 2):
         # Get the inbound and outbound flights
         origin = people[d][1]
-        outbound = flights[(origin, destination)][int(sol[d])]
-        returnf = flights[(destination, origin)][int(sol[d + 1])]
+        try:
+            outbound = flights[(origin, destination)][int(sol[d])]
+            returnf = flights[(destination, origin)][int(sol[d + 1])]
+        except IndexError as e:
+            print(e)
 
         # Total price is the price of all outbound and return flights
         totalprice += outbound[2]
@@ -76,5 +79,116 @@ for line in file('data/schedule.txt'):
 
 # print flights
 s = [1, 4, 3, 2, 7, 3, 6, 3, 2, 4, 5, 3]
-printschedule(s)
+
+
+# printschedule(s)
+# print(schedulecost(s))
+
+def randomoptimize(domain, costf):
+    best = 999999999
+    bestr = None
+    for i in range(0, 1000):
+        # Create a random solution
+        r = [float(random.randint(domain[i][0], domain[i][1]))
+             for i in range(len(domain))]
+
+        # Get the cost
+        cost = costf(r)
+
+        # Compare it to the best one so far
+        if cost < best:
+            best = cost
+            bestr = r
+    return r
+
+
+# domain = [(0, 9)] * (len(people) * 2)
+# s = randomoptimize(domain, schedulecost)
+# print (s)
+# print (schedulecost(s))
+# print (printschedule(s))
+
+def hillclimb(domain, costf):
+    # Create a random solution
+    sol = [random.randint(domain[i][0], domain[i][1])
+           for i in range(len(domain))]
+    # Main loop
+    loop_time = 0
+    while 1:
+        loop_time += 1
+        # Create list of neighboring solutions
+        neighbors = []
+
+        for j in range(len(domain)):
+            # One away in each direction
+            if sol[j] > domain[j][0]:
+                neighbors.append(sol[0:j] + [sol[j] + 1] + sol[j + 1:])
+            if sol[j] < domain[j][1]:
+                neighbors.append(sol[0:j] + [sol[j] - 1] + sol[j + 1:])
+
+        # See what the best solution amongst the neighbors is
+        current = costf(sol)
+        best = current
+        for j in range(len(neighbors)):
+            cost = costf(neighbors[j])
+            if cost < best:
+                best = cost
+                sol = neighbors[j]
+
+        # If there's no improvement, then we've reached the top
+        if best == current:
+            break
+    print("loop_time:", loop_time)
+    return sol
+
+
+# domain = [(0, 9)] * (len(people) * 2)
+# s = hillclimb(domain, schedulecost)
+# print(schedulecost(s))
+# printschedule(s)
+
+
+def annealingoptimize(domain, costf, T=100000.0, cool=0.999, step=1):
+    # Initialize the values randomly
+    vec = [float(random.randint(domain[i][0], domain[i][1]))
+           for i in range(len(domain))]
+
+    loop_count = 0
+    while T > 0.1:
+        loop_count += 1
+        # Choose one of the indices
+        i = random.randint(0, len(domain) - 1)
+
+        # Choose a direction to change it
+        # dir = random.randint(-step, step)
+        dir = random.choice([1, -1])
+
+        # Create a new list with one of the values changed
+        vecb = vec[:]
+        vecb[i] += dir
+        if vecb[i] < domain[i][0]:
+            vecb[i] = domain[i][0]
+        elif vecb[i] > domain[i][1]:
+            vecb[i] = domain[i][1]
+
+        # Calculate the current cost and the new cost
+        ea = costf(vec)
+        eb = costf(vecb)
+        p = pow(math.e, (-eb - ea) / T)
+
+        # Is it better, or does it make the probability
+        # cutoff?
+        if (eb < ea or random.random() < p):
+            vec = vecb
+
+            # Decrease the temperature
+        T = T * cool
+    print("loop_count", loop_count)
+    return vec
+
+
+domain = [(0, 9)] * (len(people) * 2)
+s = annealingoptimize(domain, schedulecost)
+print(s)
 print(schedulecost(s))
+printschedule(s)

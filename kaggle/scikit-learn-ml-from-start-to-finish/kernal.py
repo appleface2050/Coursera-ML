@@ -104,3 +104,57 @@ y_all = data_train['Survived']
 
 num_test = 0.20
 X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=num_test, random_state=23)
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import make_scorer, accuracy_score
+from sklearn.model_selection import GridSearchCV
+
+# Choose the type of classifier.
+clf = RandomForestClassifier()
+
+# Choose some parameter combinations to try
+parameters = {'n_estimators': [4, 6, 9],
+              'max_features': ['log2', 'sqrt','auto'],
+              'criterion': ['entropy', 'gini'],
+              'max_depth': [2, 3, 5, 10],
+              'min_samples_split': [2, 3, 5],
+              'min_samples_leaf': [1,5,8]
+             }
+
+# Type of scoring used to compare parameter combinations
+acc_scorer = make_scorer(accuracy_score)
+
+# Run the grid search
+grid_obj = GridSearchCV(clf, parameters, scoring=acc_scorer)
+grid_obj = grid_obj.fit(X_train, y_train)
+
+# Set the clf to the best combination of parameters
+clf = grid_obj.best_estimator_
+
+# Fit the best algorithm to the data.
+clf.fit(X_train, y_train)
+
+predictions = clf.predict(X_test)
+print(accuracy_score(y_test, predictions))
+
+# from sklearn.cross_validation import KFold
+from sklearn.model_selection import KFold
+
+def run_kfold(clf):
+    # kf = KFold(891, n_folds=10)
+    kf = KFold(n_splits=10)
+    outcomes = []
+    fold = 0
+    for train_index, test_index in kf.split(data_train):
+        fold += 1
+        X_train, X_test = X_all.values[train_index], X_all.values[test_index]
+        y_train, y_test = y_all.values[train_index], y_all.values[test_index]
+        clf.fit(X_train, y_train)
+        predictions = clf.predict(X_test)
+        accuracy = accuracy_score(y_test, predictions)
+        outcomes.append(accuracy)
+        print("Fold {0} accuracy: {1}".format(fold, accuracy))
+    mean_outcome = np.mean(outcomes)
+    print("Mean Accuracy: {0}".format(mean_outcome))
+
+run_kfold(clf)
