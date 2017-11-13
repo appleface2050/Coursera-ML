@@ -69,4 +69,50 @@ predictions = clf.predict(X)
 # print (clf.predict([[4,3,1,18]]))
 print(predictions, le_buy.inverse_transform(predictions))
 from sklearn.metrics import make_scorer, accuracy_score
+
 print(accuracy_score(Y['buy'], predictions))
+
+# extract the decision rule
+"""
+https://stackoverflow.com/questions/20224526/how-to-extract-the-decision-rules-from-scikit-learn-decision-tree
+"""
+
+from sklearn.tree import _tree
+
+
+def tree_to_code(tree, feature_names):
+    tree_ = tree.tree_
+    feature_name = [
+        feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
+        for i in tree_.feature
+        ]
+    print("def tree({}):".format(", ".join(feature_names)))
+
+    def recurse(node, depth):
+        indent = "  " * depth
+        if tree_.feature[node] != _tree.TREE_UNDEFINED:
+            name = feature_name[node]
+            threshold = tree_.threshold[node]
+            print("{}if {} <= {}:".format(indent, name, threshold))
+            recurse(tree_.children_left[node], depth + 1)
+            print("{}else:  # if {} > {}".format(indent, name, threshold))
+            recurse(tree_.children_right[node], depth + 1)
+        else:
+            print("{}return {}".format(indent, tree_.value[node]))
+
+    recurse(0, 1)
+
+
+# tree_to_code(clf, ["refer", "location", "FAQ"])
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+out = StringIO()
+out = tree.export_graphviz(clf, out_file=out)
+# print(out.getvalue())
+#
+
+print (tree.export_graphviz(clf, out_file=out))
