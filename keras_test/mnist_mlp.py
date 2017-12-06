@@ -6,15 +6,15 @@ Gets to 98.40% test accuracy after 20 epochs
 
 from __future__ import print_function
 
-import keras_test
-from keras_test.datasets import mnist
-from keras_test.models import Sequential
-from keras_test.layers import Dense, Dropout
-from keras_test.optimizers import RMSprop
+import keras
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.optimizers import RMSprop
 
 batch_size = 128
 num_classes = 10
-epochs = 20
+epochs = 2
 
 # the data, shuffled and split between train and test sets
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -29,11 +29,12 @@ print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices
-y_train = keras_test.utils.to_categorical(y_train, num_classes)
-y_test = keras_test.utils.to_categorical(y_test, num_classes)
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
-model.add(Dense(512, activation='relu', input_shape=(784,)))
+# model.add(Dense(512, activation='relu', input_shape=(784,)))
+model.add(Dense(512, activation='relu', input_dim=784))
 model.add(Dropout(0.2))
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.2))
