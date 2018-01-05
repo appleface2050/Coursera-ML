@@ -187,3 +187,5 @@ def linear_regression(X_data, y_data, alpha, epoch, optimizer=tf.train.GradientD
 
 def normal_equations(X, y):
     return np.linalg.inv(X.T @ X) @ X.T @ y
+
+
