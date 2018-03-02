@@ -61,4 +61,6 @@ if __name__ == '__main__':
         # print(len(line.split('\t')[14:]))
         insert_data_to_mysqldb(tmp.split("\t"))
         count -= 1
+        if count % 100 == 0:
+            print (count)
     db.close()
