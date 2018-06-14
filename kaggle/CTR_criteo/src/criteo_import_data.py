@@ -50,17 +50,22 @@ def insert_data_to_mysqldb(data_list):
 
 
 if __name__ == '__main__':
-    f = open("../data/test.txt", "r")
-    count = 10000
-    while count >= 0:
-        line = f.readline()
-        if not line:
-            break
-        tmp = line.strip('\n')
-        # # print(len(line.split('\t')))
-        # print(len(line.split('\t')[14:]))
-        insert_data_to_mysqldb(tmp.split("\t"))
-        count -= 1
-        if count % 100 == 0:
-            print (count)
-    db.close()
+    # f = open("../data/test.txt", "r")
+    # count = 10000
+    # while count >= 0:
+    #     line = f.readline()
+    #     if not line:
+    #         break
+    #     tmp = line.strip('\n')
+    #     # # print(len(line.split('\t')))
+    #     # print(len(line.split('\t')[14:]))
+    #     insert_data_to_mysqldb(tmp.split("\t"))
+    #     count -= 1
+    #     if count % 100 == 0:
+    #         print (count)
+    # db.close()
+
+    with open('../data/test.txt', 'r') as f:
+        for line in f:
+            tmp = line.strip('\n')
+            insert_data_to_mysqldb(tmp.split("\t"))
